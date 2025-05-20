@@ -1,15 +1,11 @@
-
 from aiogram import types, Router, F
 from aiogram.filters.command import Command
-
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
-from llm import ask_openrouter, get_free_models
-from keyboards import main_keyboard
-
 from config import *
-
+from keyboards import main_keyboard
+from llm import ask_openrouter, get_free_models
 
 router = Router()
 
@@ -48,15 +44,16 @@ async def process_question(message: types.Message, state: FSMContext):
 
 @router.message(Command("menu"))
 async def cmd_menu(message: types.Message):
-    await message.answer(
-    text="<code>.</code>",  # Маленькая точка (форматирование HTML/Markdown)
-    reply_markup=main_keyboard(),
-    parse_mode="HTML"
-)
+    await message.answer("### Menu:",
+                         parse_mode="Markdown",
+                         reply_markup=main_keyboard()
+                         )
 
 
 @router.message(Command("get_free_models"))
 async def cmd_get_free_models(message: types.Message):
     free_models_list = get_free_models()
-    text = '\n'.join([str(x) for x in free_models_list])
-    await message.answer(text)
+    text = '\n'.join([f"`{x}`" for x in free_models_list])
+    await message.answer(text,
+                         parse_mode="Markdown",
+                         )
