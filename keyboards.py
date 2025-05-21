@@ -8,7 +8,8 @@ def main_keyboard():
                 KeyboardButton(text="/ask")
             ],
             [
-                KeyboardButton(text="/get_free_models")
+                KeyboardButton(text="/conversation"),
+                KeyboardButton(text="/cancel")
             ]
         ],
         resize_keyboard=True,

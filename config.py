@@ -3,3 +3,4 @@ OPENROUTER_API_KEY = "sk-or-v1-a3a95d082a555d48f264a266ab7c78b29706762f525e38bf0
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 TEMPERATURE = 0.7
 BOT_API = "8073513257:AAEDGdnQN46NERtGGI6hd0VN_pbGVyneVOI"
+MODEL = "deepseek/deepseek-chat-v3-0324:free"
