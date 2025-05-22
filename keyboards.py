@@ -4,8 +4,7 @@ def main_keyboard():
     keyboard = ReplyKeyboardMarkup(
         keyboard=[
             [
-                KeyboardButton(text="/start"),
-                KeyboardButton(text="/ask")
+                KeyboardButton(text="/start")
             ],
             [
                 KeyboardButton(text="/conversation"),

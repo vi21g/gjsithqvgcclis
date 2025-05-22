@@ -7,7 +7,7 @@ class Conversation:
         self.model = model
         self.temperature = temperature
         self.history = []
-        self.system_prompt = "Ты - ИИ от DeepSeek, твоя задача чётко и лаконично отвечать на запрос пользователя"
+        self.system_prompt = "Ты — DeepSeek-V3, мощный AI-ассистент, разработанный компанией DeepSeek. Ты помогаешь пользователям с ответами на вопросы, генерацией текста, анализом данных и другими задачами. Будь вежливым, точным и информативным. Если информация неизвестна, честно скажи об этом. Отвечай на языке пользователя, если не указано иное."
         self.update_history(role=None, content=None, reset=True)
 
     def update_history(self, role, content, reset=False):
@@ -74,6 +74,12 @@ class Conversation:
             return f"Ошибка обработки ответа: {str(e)}"
         except Exception as e:
             return f"Неожиданная ошибка: {str(e)}"
+
+    def set_model(self, model_name):
+        self.model = model_name
+
+    def set_system_prompt(self, custom_system_prompt):
+        self.system_prompt = custom_system_prompt
 
 
 conversation = Conversation()
