@@ -4,8 +4,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
 from config import ALLOWED_USERS, MAX_LENGHT_TELEGRAM_MESSAGE
-from keyboards import main_keyboard, make_conversation_keyboard_inline
+from keyboards import keyboard_main, keyboard_conversation_inline
 from llm import get_free_models
+from logger import log_conversation
 from openrouter.conversation import conversation
 
 router = Router()
@@ -13,12 +14,13 @@ router = Router()
 
 @router.message(Command("start"))
 async def cmd_start(message: types.Message):
-    await message.answer("Меню:", reply_markup=main_keyboard())
+    await message.answer("Меню:", reply_markup=keyboard_main())
 
 
 @router.message(F.from_user.id.not_in(ALLOWED_USERS))
 async def not_allowed(message: types.Message):
     await message.answer("access denied")
+    print("deny for", message.from_user.id, message.from_user.full_name)
     return
 
 
@@ -51,7 +53,7 @@ async def cmd_conversation(message: types.Message, state: FSMContext):
     await message.answer(
         text=text,
         parse_mode="Markdown",
-        reply_markup=make_conversation_keyboard_inline(),
+        reply_markup=keyboard_conversation_inline(),
     )
     await state.set_state(ConversationState.waiting_user_question)
 
@@ -95,7 +97,7 @@ async def process_new_model(message: types.Message, state: FSMContext):
     await message.answer(
         f"Модель изменена на: `{conversation.model}`",
         parse_mode="Markdown",
-        reply_markup=make_conversation_keyboard_inline(),
+        reply_markup=keyboard_conversation_inline(),
     )
     await state.set_state(ConversationState.waiting_user_question)
 
@@ -110,7 +112,7 @@ async def process_new_temperature(message: types.Message, state: FSMContext):
             await message.answer(
                 f"Температура изменена на: `{conversation.temperature}`",
                 parse_mode="Markdown",
-                reply_markup=make_conversation_keyboard_inline(),
+                reply_markup=keyboard_conversation_inline(),
             )
         else:
             await message.answer("Температура должна быть между 0.0 и 2.0")
@@ -128,7 +130,7 @@ async def process_new_systemprompt(message: types.Message, state: FSMContext):
     )  # Сброс истории с новым промптом
     await message.answer(
         "Системный промпт обновлен. История диалога сброшена.",
-        reply_markup=make_conversation_keyboard_inline(),
+        reply_markup=keyboard_conversation_inline(),
     )
     await state.set_state(ConversationState.waiting_user_question)
 
@@ -142,14 +144,31 @@ async def process_conversation(message: types.Message, state: FSMContext):
         conversation.update_history(None, None, True)
     else:
         try:
+            # Отправляем промежуточное сообщение и сохраняем его ID
+            processing_msg = await message.reply("⏳ Нейросеть готовит ответ...")
+
             conversation.update_history(role="user", content=message.text)
             answer = conversation.get_assistant_answer(message.text)
+
+            # Логируем диалог
+            log_conversation(
+                user_id=message.from_user.id,
+                username=message.from_user.full_name,
+                question=message.text,
+                answer=answer
+            )
+
+            # Удаляем промежуточное сообщение
+            try:
+                await processing_msg.delete()
+            except Exception as delete_error:
+                print(f"Не удалось удалить промежуточное сообщение: {delete_error}")
 
             # Разбиваем длинные сообщения на части
             max_length = MAX_LENGHT_TELEGRAM_MESSAGE
             if len(answer) > max_length:
                 parts = [
-                    answer[i : i + max_length]
+                    answer[i: i+max_length]
                     for i in range(0, len(answer), max_length)
                 ]
                 for part in parts:
@@ -157,7 +176,7 @@ async def process_conversation(message: types.Message, state: FSMContext):
                         part,
                         parse_mode="Markdown",
                         reply_markup=(
-                            make_conversation_keyboard_inline()
+                            keyboard_conversation_inline()
                             if part == parts[-1]
                             else None
                         ),
@@ -166,7 +185,7 @@ async def process_conversation(message: types.Message, state: FSMContext):
                 await message.answer(
                     answer,
                     parse_mode="Markdown",
-                    reply_markup=make_conversation_keyboard_inline(),
+                    # reply_markup=keyboard_conversation_inline(),
                 )
 
             conversation.update_history(role="assistant", content=answer)

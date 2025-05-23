@@ -1,8 +1,12 @@
-from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
-                           KeyboardButton, ReplyKeyboardMarkup)
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
+)
 
 
-def main_keyboard():
+def keyboard_main():
     keyboard = ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="/start")],
@@ -14,7 +18,7 @@ def main_keyboard():
     return keyboard
 
 
-def make_conversation_keyboard_inline():
+def keyboard_conversation_inline():
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="Выбрать модель", callback_data="change_model")],

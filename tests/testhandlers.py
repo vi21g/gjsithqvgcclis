@@ -5,7 +5,7 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from keyboards import make_conversation_keyboard_inline
+from keyboards import keyboard_conversation_inline
 
 router_for_test = Router()
 
@@ -22,7 +22,7 @@ def kb_reset_dialogue_inline() -> InlineKeyboardMarkup:
 @router_for_test.message(Command("xxx"))
 async def cmd_xxx(message: types.Message):
     await message.answer(
-        "Тестируем инлайн-клавиатуру:", reply_markup=make_conversation_keyboard_inline()
+        "Тестируем инлайн-клавиатуру:", reply_markup=keyboard_conversation_inline()
     )
 
 
