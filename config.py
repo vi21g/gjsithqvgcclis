@@ -4,3 +4,4 @@ OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 TEMPERATURE = 0.7
 BOT_API = "8073513257:AAEDGdnQN46NERtGGI6hd0VN_pbGVyneVOI"
 MODEL = "deepseek/deepseek-chat-v3-0324:free"
+MAX_LENGHT_TELEGRAM_MESSAGE = 4000

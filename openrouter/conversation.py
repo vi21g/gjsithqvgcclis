@@ -1,4 +1,5 @@
 import requests
+
 from config import *
 
 
@@ -13,52 +14,43 @@ class Conversation:
     def update_history(self, role, content, reset=False):
         if reset:
             self.history = []
-            self.history.append(
-                {
-                    "role": "system",
-                    "content": self.system_prompt
-                }
-            )
+            self.history.append({"role": "system", "content": self.system_prompt})
 
         else:
-            self.history.append(
-                {
-                    "role": role,
-                    "content": content
-                }
-            )
+            self.history.append({"role": role, "content": content})
 
     def get_history(self):
         return self.history
 
-    def get_assistant_answer(self,
-                             question: str,
-                             model: str = MODEL,
-                             temperature: float = TEMPERATURE,
-                             openrouter_api_key: str = OPENROUTER_API_KEY,
-                             openrouter_api_url: str = OPENROUTER_API_URL,
-                             ) -> str:
+    def get_assistant_answer(
+        self,
+        question: str,
+        model: str = MODEL,
+        temperature: float = TEMPERATURE,
+        openrouter_api_key: str = OPENROUTER_API_KEY,
+        openrouter_api_url: str = OPENROUTER_API_URL,
+    ) -> str:
         """
-            Отправляет запрос к LLM через OpenRouter API и возвращает ответ.
+        Отправляет запрос к LLM через OpenRouter API и возвращает ответ.
 
-            Параметры:
-            - question: Вопрос пользователя
-            - model: Идентификатор модели (по умолчанию gpt-3.5-turbo)
-            - temperature: Параметр случайности ответа (0-1)
+        Параметры:
+        - question: Вопрос пользователя
+        - model: Идентификатор модели (по умолчанию gpt-3.5-turbo)
+        - temperature: Параметр случайности ответа (0-1)
 
-            Возвращает:
-            - Ответ модели в виде строки
-            - В случае ошибки возвращает строку с описанием ошибки
-            """
+        Возвращает:
+        - Ответ модели в виде строки
+        - В случае ошибки возвращает строку с описанием ошибки
+        """
         headers = {
             "Authorization": f"Bearer {openrouter_api_key}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
         payload = {
             "model": model,
             "messages": self.get_history(),
-            "temperature": temperature
+            "temperature": temperature,
         }
 
         try:
