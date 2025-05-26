@@ -7,8 +7,10 @@ import logging
 from aiogram import Bot, Dispatcher
 
 from config import BOT_API
+from database.database import db
 from handlers import router
 from tests.testhandlers import router_for_test
+
 
 # Настройка логгера
 logger = logging.getLogger(__name__)
@@ -18,14 +20,20 @@ logging.basicConfig(
 
 
 async def main(with_tests=False):
+    await db.connect()
+
     bot = Bot(BOT_API)
+
     dp = Dispatcher()
     dp.include_router(router)
     if with_tests:
         dp.include_router(router_for_test)
 
     logger.info("Starting bot...")
-    await dp.start_polling(bot)
+    try:
+        await dp.start_polling(bot)
+    finally:
+        await db.close()
 
 
 if __name__ == "__main__":
