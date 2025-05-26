@@ -3,10 +3,12 @@ from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
-from config import ALLOWED_USERS, MAX_LENGTH_TELEGRAM_MESSAGE
+from config import ALLOWED_USERS, MAX_LENGTH_TELEGRAM_MESSAGE, MODEL, TEMPERATURE
 from keyboards import keyboard_main, keyboard_conversation_inline
 from llm import get_free_models
 from logger import log_conversation
+
+from database.database import db
 from openrouter.conversation import conversation
 
 router = Router()
@@ -20,7 +22,7 @@ async def cmd_start(message: types.Message):
 @router.message(F.from_user.id.not_in(ALLOWED_USERS))
 async def not_allowed(message: types.Message):
     await message.answer("access denied")
-    print("deny for", message.from_user.id, message.from_user.full_name)
+    print("access denied for", message.from_user.id, message.from_user.full_name)
     return
 
 
@@ -36,13 +38,22 @@ async def cmd_get_free_models(message: types.Message):
 
 class ConversationState(StatesGroup):
     waiting_user_question = State()
-    waiting_model = State()  # Новое состояние для смены модели
-    waiting_temperature = State()  # Новое состояние для смены температуры
-    waiting_systemprompt = State()  # Новое состояние для смены промпта
+    waiting_model = State()
+    waiting_temperature = State()
+    waiting_systemprompt = State()
+
+    # поля для хранения настроек в состоянии
+    model: str = MODEL
+    temperature: float = TEMPERATURE
+    system_prompt: str = conversation.system_prompt
 
 
 @router.message(Command("conversation"))
 async def cmd_conversation(message: types.Message, state: FSMContext):
+    # Загружаем настройки пользователя из базы данных
+    user_settings = await db.get_user_settings(message.from_user.id)
+
+
     text = (
         "Открываем диалог с LLM:\n"
         f"Model: `{conversation.model}`\n"
