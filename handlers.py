@@ -3,7 +3,7 @@ from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
-from config import ALLOWED_USERS, MAX_LENGHT_TELEGRAM_MESSAGE
+from config import ALLOWED_USERS, MAX_LENGTH_TELEGRAM_MESSAGE
 from keyboards import keyboard_main, keyboard_conversation_inline
 from llm import get_free_models
 from logger import log_conversation
@@ -165,7 +165,7 @@ async def process_conversation(message: types.Message, state: FSMContext):
                 print(f"Не удалось удалить промежуточное сообщение: {delete_error}")
 
             # Разбиваем длинные сообщения на части
-            max_length = MAX_LENGHT_TELEGRAM_MESSAGE
+            max_length = MAX_LENGTH_TELEGRAM_MESSAGE
             if len(answer) > max_length:
                 parts = [
                     answer[i: i+max_length]
