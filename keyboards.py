@@ -21,17 +21,32 @@ def keyboard_main():
 def keyboard_conversation_inline():
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="Выбрать модель", callback_data="change_model")],
             [
                 InlineKeyboardButton(
-                    text="Установить температуру", callback_data="change_temperature"
-                )
+                    text="Model", callback_data="change_model"
+                ),
+                InlineKeyboardButton(
+                    text="Temperature", callback_data="change_temperature"
+                ),
             ],
             [
                 InlineKeyboardButton(
-                    text="Задать системный промпт", callback_data="change_systemprompt"
+                    text="System prompt", callback_data="change_systemprompt"
                 )
             ],
+        ]
+    )
+    return keyboard
+
+
+def keyboard_stop_dialogue_inline():
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="Завершить диалог и очистить историю", callback_data="clear_history"
+                )
+            ]
         ]
     )
     return keyboard

@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+
 load_dotenv()
 
 import asyncio
@@ -10,7 +11,6 @@ from config import BOT_API
 from database.database import db
 from handlers import router
 from tests.testhandlers import router_for_test
-
 
 # Настройка логгера
 logger = logging.getLogger(__name__)
