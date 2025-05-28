@@ -1,5 +1,4 @@
 from dotenv import load_dotenv
-
 load_dotenv()
 
 import asyncio
@@ -10,7 +9,6 @@ from aiogram import Bot, Dispatcher
 from config import BOT_API
 from database.database import db
 from handlers import router
-from tests.testhandlers import router_for_test
 
 # Настройка логгера
 logger = logging.getLogger(__name__)
@@ -26,8 +24,8 @@ async def main(with_tests=False):
 
     dp = Dispatcher()
     dp.include_router(router)
-    if with_tests:
-        dp.include_router(router_for_test)
+    # if with_tests:
+    #     dp.include_router(router_testing)
 
     logger.info("Starting bot...")
     try:
